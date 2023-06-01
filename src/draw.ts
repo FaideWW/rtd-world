@@ -15,15 +15,11 @@ export function start(canvasEl: HTMLCanvasElement) {
   width = canvasEl.clientWidth;
   height = canvasEl.clientHeight;
 
-  // running = true;
-  // timer = 0;
+  const start = performance.now();
   heights = midpointDisplacement2D(width, height, 1000, 0.8);
-
-  console.log(heights);
-
   normalizeHeightMap(heights, 255);
-
-  // console.log(heights);
+  const time = performance.now() - start;
+  console.log(`terrain generation took ${time}ms`);
 
   draw();
   // window.requestAnimationFrame(() => draw());
@@ -72,7 +68,9 @@ function normalizeHeightMap(heightMap: number[][], max: number) {
 
   for (let y = 0; y < heightMap.length; y++) {
     for (let x = 0; x < heightMap[y].length; x++) {
-      heightMap[y][x] = ((heightMap[y][x] - minHeight) / range) * max;
+      heightMap[y][x] = Math.floor(
+        ((heightMap[y][x] - minHeight) / range) * max
+      );
     }
   }
 }
@@ -90,13 +88,13 @@ function midpointDisplacement2D(
 
   // put random values in the corners
   // top left
-  heightMap[0][0] = Math.floor(Math.random() * maxRand);
+  heightMap[0][0] = Math.random() * maxRand;
   // top right
-  heightMap[0][width - 1] = Math.floor(Math.random() * maxRand);
+  heightMap[0][width - 1] = Math.random() * maxRand;
   // bottom left
-  heightMap[height - 1][0] = Math.floor(Math.random() * maxRand);
+  heightMap[height - 1][0] = Math.random() * maxRand;
   // bottom right
-  heightMap[height - 1][width - 1] = Math.floor(Math.random() * maxRand);
+  heightMap[height - 1][width - 1] = Math.random() * maxRand;
 
   // [xMin, xMax, yMin, yMax, randomness]
   const queue: Array<[number, number, number, number, number]> = [];
@@ -111,40 +109,38 @@ function midpointDisplacement2D(
     const xMid = Math.floor((xMax + xMin) / 2);
     const yMid = Math.floor((yMax + yMin) / 2);
 
-    const integerHalfRand = Math.floor(randomness / 2);
+    const halfRand = randomness / 2;
 
     // calculate the midpoints of each edge, and add randomness
 
     // mid-left = midpoint(topleft, bottomleft)
     heightMap[yMid][xMin] =
       (heightMap[yMin][xMin] + heightMap[yMax][xMin]) / 2 +
-      (Math.floor(Math.random() * randomness) - integerHalfRand);
+      (Math.random() * randomness - halfRand);
 
     // mid-right = midpoint(topright, bottomright)
     heightMap[yMid][xMax] =
       (heightMap[yMin][xMax] + heightMap[yMax][xMax]) / 2 +
-      (Math.floor(Math.random() * randomness) - integerHalfRand);
+      (Math.random() * randomness - halfRand);
 
     // mid-top = midpoint(topleft, topright)
     heightMap[yMin][xMid] =
       (heightMap[yMin][xMin] + heightMap[yMin][xMax]) / 2 +
-      (Math.floor(Math.random() * randomness) - integerHalfRand);
+      (Math.random() * randomness - halfRand);
 
     // mid-bottom = midpoint(bottomleft, bottomright)
     heightMap[yMax][xMid] =
       (heightMap[yMax][xMin] + heightMap[yMax][xMax]) / 2 +
-      (Math.floor(Math.random() * randomness) - integerHalfRand);
+      (Math.random() * randomness - halfRand);
 
     // center = avg(midleft, midright, midtop, midbottom)
     const center =
-      Math.floor(
-        (heightMap[yMid][xMin] +
-          heightMap[yMid][xMax] +
-          heightMap[yMin][xMid] +
-          heightMap[yMax][xMid]) /
-          4
-      ) + 0;
-    // (Math.floor(Math.random() * randomness) - integerHalfRand);
+      (heightMap[yMid][xMin] +
+        heightMap[yMid][xMax] +
+        heightMap[yMin][xMid] +
+        heightMap[yMax][xMid]) /
+        4 +
+      (Math.random() * randomness - halfRand);
 
     heightMap[yMid][xMid] = center;
 
@@ -156,6 +152,5 @@ function midpointDisplacement2D(
       queue.push([xMid, xMax, yMid, yMax, randomness * decayFactor]);
     }
   }
-
   return heightMap;
 }

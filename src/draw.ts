@@ -98,11 +98,12 @@ function midpointDisplacement2D(
 
   // [xMin, xMax, yMin, yMax, randomness]
   const queue: Array<[number, number, number, number, number]> = [];
+  let queueIndex = 0;
 
   queue.push([0, width - 1, 0, height - 1, maxRand / 2]);
 
-  while (queue.length > 0) {
-    const next = queue.shift();
+  while (queueIndex < queue.length) {
+    const next = queue[queueIndex++];
     if (!next) continue; // why Typescript, why
     const [xMin, xMax, yMin, yMax, randomness] = next;
 

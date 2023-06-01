@@ -2,8 +2,8 @@ let ctx: CanvasRenderingContext2D | null;
 let width = 0;
 let height = 0;
 
-let running = false;
-let timer = 0;
+// let running = false;
+// let timer = 0;
 
 let heights: number[][];
 
@@ -15,8 +15,8 @@ export function start(canvasEl: HTMLCanvasElement) {
   width = canvasEl.clientWidth;
   height = canvasEl.clientHeight;
 
-  running = true;
-  timer = 0;
+  // running = true;
+  // timer = 0;
   heights = midpointDisplacement2D(width, height, 1000, 0.8);
 
   console.log(heights);
@@ -30,7 +30,7 @@ export function start(canvasEl: HTMLCanvasElement) {
 }
 
 export function stop() {
-  running = false;
+  // running = false;
 }
 
 function draw() {
